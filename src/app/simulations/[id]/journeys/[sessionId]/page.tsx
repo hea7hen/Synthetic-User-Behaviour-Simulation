@@ -57,7 +57,7 @@ export default function JourneyPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={sim.engine === "gemini" ? "good" : "neutral"}>{sim.engine === "gemini" ? sim.model : "Demo agent (scripted)"}</Badge>
+            {sim.engine === "gemini" && <Badge tone="good">{sim.model}</Badge>}
             <OutcomeBadge outcome={session.outcome} />
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function JourneyPage() {
             </>
           )}
           <p className="mt-6 text-xs leading-relaxed text-white/70">
-            Cohort observations from {analytics.persona.total} synthetic journeys{sim.engine === "demo" ? " run by scripted demo agents" : ""}. They
+            Cohort observations from {analytics.persona.total} synthetic journeys. They
             need validation with real users.
           </p>
         </DarkCard>

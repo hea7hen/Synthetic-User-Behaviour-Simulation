@@ -1,19 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Avatar, Badge, Button, Card, DarkCard, Field, LinkButton, Notice, PageHeader, inputClass } from "@/components/ui";
 import { generatePersonas } from "@/lib/engine/personas";
-import type { EngineKind, Persona } from "@/lib/engine/types";
+import type { Persona } from "@/lib/engine/types";
 import { isAbort } from "@/lib/engine/util";
 import { makeBackend } from "@/lib/runner";
-import { hasKey, useStore } from "@/lib/store";
+import { canRun, currentEngine, useStore } from "@/lib/store";
 
 export default function GeneratePersonasPage() {
   const router = useRouter();
   const settings = useStore((s) => s.settings);
   const addPersonas = useStore((s) => s.addPersonas);
-  const connected = hasKey(settings);
+  const engine = currentEngine(settings);
+  const ready = canRun(settings);
 
   const [segment, setSegment] = useState("Young Professionals");
   const [count, setCount] = useState(6);
@@ -21,7 +23,6 @@ export default function GeneratePersonasPage() {
   const [ageMax, setAgeMax] = useState(35);
   const [location, setLocation] = useState("Bengaluru, India");
   const [context, setContext] = useState("People who may take a small personal loan through a mobile app.");
-  const [engine, setEngine] = useState<EngineKind>(connected ? "gemini" : "demo");
 
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<[number, number]>([0, 0]);
@@ -89,24 +90,24 @@ export default function GeneratePersonasPage() {
                 <textarea className={inputClass} rows={3} value={context} onChange={(e) => setContext(e.target.value)} />
               </Field>
             </div>
-            <div className="sm:col-span-2">
-              <Field label="Written by">
-                <select className={inputClass} value={engine} onChange={(e) => setEngine(e.target.value as EngineKind)}>
-                  <option value="gemini" disabled={!connected}>
-                    Gemini{connected ? ` (${settings.model})` : " (add an API key in Settings)"}
-                  </option>
-                  <option value="demo">Demo architect (scripted, no API key)</option>
-                </select>
-              </Field>
-            </div>
           </div>
+          {!ready && (
+            <div className="mt-4">
+              <Notice tone="warn">
+                <Link href="/settings" className="font-semibold text-blue underline">
+                  Add a Gemini API key in Settings
+                </Link>{" "}
+                to generate personas.
+              </Notice>
+            </div>
+          )}
           {error && (
             <div className="mt-4">
               <Notice tone="bad">{error}</Notice>
             </div>
           )}
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={run} disabled={busy}>
+            <Button onClick={run} disabled={busy || !ready}>
               {busy ? `Writing personas… ${progress[0]} of ${progress[1]}` : drafts.length ? "Generate again" : "Generate personas"}
             </Button>
             {busy && (
@@ -125,7 +126,8 @@ export default function GeneratePersonasPage() {
           </p>
           <p className="mt-6 text-sm leading-relaxed text-white/70">
             Ages, OCEAN scores, risk tolerance, digital literacy and price sensitivity are sampled first. The model then writes a name,
-            job, goals, frustrations and backstory that fit those numbers. About {Math.ceil(count / 5)} model {Math.ceil(count / 5) === 1 ? "call" : "calls"}.
+            job, goals, frustrations and backstory that fit those numbers.
+            {engine === "gemini" && ` About ${Math.ceil(count / 5)} model ${Math.ceil(count / 5) === 1 ? "call" : "calls"}.`}
           </p>
         </DarkCard>
       </div>

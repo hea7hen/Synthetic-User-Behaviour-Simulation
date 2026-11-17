@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Button, Card, Field, Modal, Notice, PageHeader, inputClass } from "@/components/ui";
+import { Button, Card, Field, Modal, Notice, PageHeader, Toggle, inputClass } from "@/components/ui";
 import { listModels, pickDefaultModel } from "@/lib/engine/llm";
 import { downloadFile } from "@/lib/export";
 import { useStore } from "@/lib/store";
@@ -41,7 +41,7 @@ export default function SettingsPage() {
   const removeKey = () => {
     updateSettings({ apiKey: "", model: "", models: [] });
     setDraftKey("");
-    setMessage({ ok: true, text: "Key removed from this browser. The app is back in demo mode." });
+    setMessage({ ok: true, text: "Key removed from this browser." });
   };
 
   const num = (v: string, lo: number, hi: number, fallback: number) => {
@@ -57,7 +57,7 @@ export default function SettingsPage() {
           <Card>
             <h2 className="text-2xl font-semibold tracking-tight">Gemini API key</h2>
             <p className="mt-1 text-[15px] text-muted">
-              With a key, every agent is a Gemini model call. Without one, the app runs scripted demo agents.
+              Every agent is a Gemini model call made with this key.
             </p>
             <div className="mt-5 space-y-4">
               <Field label="API key">
@@ -116,6 +116,25 @@ export default function SettingsPage() {
                 remove it on shared computers.
               </p>
             </div>
+          </Card>
+
+          <Card>
+            <h2 className="text-2xl font-semibold tracking-tight">Demo simulation</h2>
+            <p className="mt-1 text-[15px] text-muted">
+              A fallback for showing how SUBS works when the Gemini API is unavailable.
+            </p>
+            <div className="mt-5">
+              <Toggle
+                checked={settings.demoSimulation}
+                onChange={(v) => updateSettings({ demoSimulation: v })}
+                label={settings.demoSimulation ? "Demo simulation is on" : "Demo simulation is off"}
+              />
+            </div>
+            <p className="mt-3 text-xs leading-relaxed text-muted">
+              When on, Start simulation and Generate personas run scripted agents and make no Gemini calls, with or without a key. Trait
+              effects are built into the script, so its results are not findings. This switch is the only place the app shows which mode
+              is in use; runs are not marked as scripted on other screens. Exported files still record the mode in their engine field.
+            </p>
           </Card>
 
           <Card>

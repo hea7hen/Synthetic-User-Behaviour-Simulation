@@ -9,7 +9,7 @@ import { buildSessions, runSimulation } from "./engine/orchestrator";
 import { getScenario } from "./engine/scenarios";
 import type { EngineKind, Persona, Simulation } from "./engine/types";
 import { uid } from "./engine/util";
-import { useStore, type Settings } from "./store";
+import { currentEngine, useStore, type Settings } from "./store";
 
 const controllers = new Map<string, AbortController>();
 
@@ -93,7 +93,7 @@ export function rerunSimulation(prev: Simulation): Simulation {
       runsPerPersona: prev.runsPerPersona,
       baselineRuns: prev.baselineRuns,
       maxSteps: prev.maxSteps,
-      engine: prev.engine,
+      engine: currentEngine(settings),
     },
     settings,
   );

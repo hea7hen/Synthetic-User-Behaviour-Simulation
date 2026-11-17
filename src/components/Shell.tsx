@@ -104,7 +104,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 )}
               >
                 <span className={clsx("h-2 w-2 rounded-full", connected ? "bg-good" : "bg-muted/60")} />
-                {connected ? `Gemini · ${settings.model}` : "Demo mode · add API key"}
+                {connected ? `Gemini · ${settings.model}` : "Add API key"}
               </Link>
             )}
             <span className="hidden text-sm text-muted sm:block">{ready ? fmtDate(Date.now()) : ""}</span>

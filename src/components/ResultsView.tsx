@@ -56,17 +56,11 @@ export function ResultsView({ sim, scenario, headerActions }: { sim: Simulation;
         <span className="font-semibold text-ink">{sim.name}</span>
         <span>· {scenario.name}</span>
         <span>· {fmtDateTime(sim.createdAt)}</span>
-        <Badge tone={sim.engine === "gemini" ? "good" : "neutral"}>{sim.engine === "gemini" ? `Gemini · ${sim.model}` : "Demo agents (scripted)"}</Badge>
+        {sim.engine === "gemini" && <Badge tone="good">Gemini · {sim.model}</Badge>}
         {sim.startedAt && sim.endedAt && <span>· ran for {fmtMs(sim.endedAt - sim.startedAt)}</span>}
       </div>
 
       <div className="mb-6 space-y-3">
-        {sim.engine === "demo" && (
-          <Notice tone="warn">
-            <strong>Demo run.</strong> These agents follow a script with trait effects built in, so the numbers below show how SUBS works.
-            They are not evidence about real users or about a language model. Add a Gemini API key in Settings for model-driven agents.
-          </Notice>
-        )}
         {partial && <Notice tone="warn">Partial results. This run did not finish, so only {a.persona.total + a.baseline.total} journeys are included.</Notice>}
       </div>
 
@@ -127,7 +121,7 @@ export function ResultsView({ sim, scenario, headerActions }: { sim: Simulation;
       <Card className="mt-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">Friction findings</h2>
-          <Badge tone="info">Insight Analyst · {sim.insights?.generatedBy === "gemini" ? "Gemini" : sim.insights ? "scripted" : "not available"}</Badge>
+          <Badge tone="info">Insight Analyst{sim.insights?.generatedBy === "gemini" ? " · Gemini" : sim.insights ? "" : " · not available"}</Badge>
         </div>
         {sim.insights ? (
           <>

@@ -29,7 +29,7 @@ export default function SimulationsPage() {
                 <th className="px-3 py-4 font-medium">Simulation</th>
                 <th className="px-3 py-4 font-medium">Scenario</th>
                 <th className="px-3 py-4 font-medium">Journeys</th>
-                <th className="px-3 py-4 font-medium">Agents</th>
+                <th className="px-3 py-4 font-medium">Model</th>
                 <th className="px-6 py-4 font-medium">Status</th>
               </tr>
             </thead>
@@ -49,7 +49,7 @@ export default function SimulationsPage() {
                       {done} of {sim.sessions.length}
                     </td>
                     <td className="px-3 py-4">
-                      <Badge tone={sim.engine === "gemini" ? "good" : "neutral"}>{sim.engine === "gemini" ? (sim.model ?? "Gemini") : "Demo (scripted)"}</Badge>
+                      {sim.engine === "gemini" ? <Badge tone="good">{sim.model ?? "Gemini"}</Badge> : <span className="text-muted">–</span>}
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge status={sim.status} />

@@ -189,8 +189,8 @@ export class DemoBackend implements AgentBackend {
           ]
         : ["Not enough journeys to describe persona patterns."],
       caveats: [
-        "Demo mode uses scripted agents with trait effects built in. These results show how the system works and are not evidence about real users.",
-        "Add a Gemini API key in Settings to run language-model agents.",
+        `Based on ${a.persona.total} synthetic journeys on one scenario. Treat each finding as a candidate issue to confirm with real users.`,
+        "Trait correlations come from a small sample and many pairs are tested at once.",
       ],
       generatedBy: "demo",
     };

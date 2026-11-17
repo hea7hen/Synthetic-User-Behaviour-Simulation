@@ -1,22 +1,23 @@
 "use client";
 
 import clsx from "clsx";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button, Card, DarkCard, Empty, Field, LinkButton, Notice, PageHeader, Toggle, inputClass } from "@/components/ui";
 import { samplePersonas } from "@/lib/engine/personas";
 import { SCENARIOS, getScenario } from "@/lib/engine/scenarios";
-import type { EngineKind } from "@/lib/engine/types";
 import { fmtDateTime } from "@/lib/format";
 import { createSimulation, estimateCalls, startSimulation } from "@/lib/runner";
-import { hasKey, useStore } from "@/lib/store";
+import { canRun, currentEngine, useStore } from "@/lib/store";
 
 export default function NewSimulationPage() {
   const router = useRouter();
   const personas = useStore((s) => s.personas);
   const addPersonas = useStore((s) => s.addPersonas);
   const settings = useStore((s) => s.settings);
-  const connected = hasKey(settings);
+  const engine = currentEngine(settings);
+  const ready = canRun(settings);
 
   const [group, setGroup] = useState("All");
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
@@ -24,7 +25,6 @@ export default function NewSimulationPage() {
   const [runs, setRuns] = useState(1);
   const [withBaseline, setWithBaseline] = useState(true);
   const [maxSteps, setMaxSteps] = useState(12);
-  const [engine, setEngine] = useState<EngineKind>(connected ? "gemini" : "demo");
   const [name, setName] = useState("");
 
   const segments = useMemo(() => ["All", ...Array.from(new Set(personas.map((p) => p.segment)))], [personas]);
@@ -149,14 +149,6 @@ export default function NewSimulationPage() {
                 <input className={inputClass} type="number" min={4} max={25} value={maxSteps} onChange={(e) => setMaxSteps(clampInt(e.target.value, 4, 25))} />
               </Field>
             </div>
-            <Field label="Agents">
-              <select className={inputClass} value={engine} onChange={(e) => setEngine(e.target.value as EngineKind)}>
-                <option value="gemini" disabled={!connected}>
-                  Gemini{connected ? ` (${settings.model})` : " (add an API key in Settings)"}
-                </option>
-                <option value="demo">Demo agents (scripted, no API key)</option>
-              </select>
-            </Field>
             <Field label="Simulation name" hint="Optional.">
               <input className={inputClass} value={name} onChange={(e) => setName(e.target.value)} placeholder="Loan flow, first pass" />
             </Field>
@@ -169,19 +161,22 @@ export default function NewSimulationPage() {
               </div>
               <Toggle checked={withBaseline} onChange={setWithBaseline} label="Compare with baseline" tone="lime" />
             </div>
-            {engine === "demo" && (
+            {!ready ? (
               <Notice tone="warn">
-                Demo agents follow a script with trait effects built in. Use them to try the workflow. Results are not evidence about real
-                users or about a language model.
+                <Link href="/settings" className="font-semibold text-blue underline">
+                  Add a Gemini API key in Settings
+                </Link>{" "}
+                to start a simulation.
               </Notice>
-            )}
-            {engine === "gemini" && (
+            ) : engine === "gemini" ? (
               <Notice>
                 About {calls} model calls. At {settings.requestsPerMinute} requests a minute this takes roughly {minutes}{" "}
                 {minutes === 1 ? "minute" : "minutes"}. Keep this tab open while it runs.
               </Notice>
+            ) : (
+              <Notice>Keep this tab open while it runs.</Notice>
             )}
-            <Button className="w-full" disabled={selected.length === 0} onClick={start}>
+            <Button className="w-full" disabled={selected.length === 0 || !ready} onClick={start}>
               Start simulation
             </Button>
             {selected.length === 0 && <p className="text-center text-sm text-muted">Select at least one persona.</p>}

@@ -8,6 +8,7 @@ import { Badge, Button, Card, DarkCard, LinkButton, Modal, Notice, OutcomeBadge,
 import { stateLabel } from "@/lib/engine/scenarios";
 import type { Scenario, Session, Simulation } from "@/lib/engine/types";
 import { cancelSimulation, rerunSimulation } from "@/lib/runner";
+import { canRun, useStore } from "@/lib/store";
 
 function AgentRow({ icon, name, status, active }: { icon: ReactNode; name: string; status: string; active: boolean }) {
   return (
@@ -54,6 +55,7 @@ function SessionCard({ session, scenario }: { session: Session; scenario: Scenar
 export function RunView({ sim, scenario, onViewResults }: { sim: Simulation; scenario: Scenario; onViewResults: () => void }) {
   const router = useRouter();
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const settings = useStore((s) => s.settings);
 
   const live = sim.status === "running" || sim.status === "analyzing" || sim.status === "queued";
   const total = sim.sessions.length;
@@ -87,7 +89,9 @@ export function RunView({ sim, scenario, onViewResults }: { sim: Simulation; sce
               <LinkButton href="/simulations/new" variant="secondary">
                 Edit setup
               </LinkButton>
-              <Button onClick={() => router.push(`/simulations/${rerunSimulation(sim).id}`)}>Run again</Button>
+              <Button disabled={!canRun(settings)} onClick={() => router.push(`/simulations/${rerunSimulation(sim).id}`)}>
+                Run again
+              </Button>
             </>
           )
         }
@@ -127,7 +131,7 @@ export function RunView({ sim, scenario, onViewResults }: { sim: Simulation; sce
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Badge tone={sim.engine === "gemini" ? "good" : "neutral"}>{sim.engine === "gemini" ? sim.model : "Demo agents (scripted)"}</Badge>
+                {sim.engine === "gemini" && <Badge tone="good">{sim.model}</Badge>}
                 <Badge>{steps} steps logged</Badge>
                 <Badge>{sim.requests} agent decisions</Badge>
               </div>

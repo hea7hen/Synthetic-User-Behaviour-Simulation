@@ -32,7 +32,7 @@ const one = (v: unknown) => (typeof v === "number" ? `${v.toFixed(1)}%` : String
 export function FunnelChart({ data, showBaseline }: { data: { label: string; persona: number; baseline: number }[]; showBaseline: boolean }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <LineChart data={data} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 10, right: 40, left: -10, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis dataKey="label" tick={axis} tickLine={false} axisLine={{ stroke: GRID }} interval={0} />
         <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={axis} tickLine={false} axisLine={false} unit="%" />

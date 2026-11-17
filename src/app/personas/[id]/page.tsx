@@ -12,7 +12,7 @@ import { useStore } from "@/lib/store";
 const SOURCE: Record<string, string> = {
   manual: "Created by hand",
   gemini: "Written by the Persona Architect (Gemini)",
-  demo: "Written by the scripted demo architect",
+  demo: "Generated persona",
   sample: "Sample persona",
 };
 

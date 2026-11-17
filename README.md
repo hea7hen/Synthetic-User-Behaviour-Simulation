@@ -23,7 +23,13 @@ Keep this folder outside iCloud Drive (so not in Documents or Desktop when those
 
 The key is stored in this browser's local storage and sent only to Google's Gemini API, directly from the page. There is no SUBS server. Anyone with access to the browser profile can read the key, so use one you can revoke.
 
-Without a key the app runs in **demo mode**: scripted agents with trait effects built in. Demo results show how the system works. They are not evidence about real users or about a language model, and every demo result is labelled.
+## Demo simulation
+
+Settings has a **Demo simulation** switch, off by default. When it is on, Start simulation and Generate personas run scripted agents and make no Gemini calls, with or without a key. It is a fallback for showing the flow when the API is unavailable.
+
+The switch is the only trigger and the only place the app shows which mode is in use: runs are not marked as scripted on other screens. Trait effects are built into the script, so demo results are not findings about real users or about a language model. Exported CSV and JSON files record the mode in their `engine` field (`demo` or `gemini`).
+
+With the switch off, a simulation needs a Gemini key.
 
 ## The agent team
 

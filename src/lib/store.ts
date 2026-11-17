@@ -13,6 +13,8 @@ export interface Settings {
   concurrency: number;
   temperature: number;
   displayName: string;
+  /** When on, simulations run scripted agents instead of calling Gemini. */
+  demoSimulation: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -23,6 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   concurrency: 5,
   temperature: 0.9,
   displayName: "",
+  demoSimulation: false,
 };
 
 interface State {
@@ -89,4 +92,14 @@ export const useStore = create<State>()(
 
 export function hasKey(settings: Settings): boolean {
   return settings.apiKey.trim().length > 0 && settings.model.trim().length > 0;
+}
+
+/** The demo simulation toggle in Settings is the only thing that selects scripted agents. */
+export function currentEngine(settings: Settings): "gemini" | "demo" {
+  return settings.demoSimulation ? "demo" : "gemini";
+}
+
+/** A run can start when demo simulation is on, or a Gemini key and model are set. */
+export function canRun(settings: Settings): boolean {
+  return settings.demoSimulation || hasKey(settings);
 }

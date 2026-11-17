@@ -7,7 +7,7 @@ import { Card, LinkButton, Notice, PageHeader, Stat, StatusBadge } from "@/compo
 import { computeAnalytics } from "@/lib/engine/analytics";
 import { getScenario } from "@/lib/engine/scenarios";
 import { fmtDateTime, greeting, pct, signedPoints } from "@/lib/format";
-import { hasKey, useStore } from "@/lib/store";
+import { canRun, useStore } from "@/lib/store";
 
 export default function DashboardPage() {
   const settings = useStore((s) => s.settings);
@@ -49,14 +49,13 @@ export default function DashboardPage() {
         }
       />
 
-      {!hasKey(settings) && (
+      {!canRun(settings) && (
         <div className="mb-6">
           <Notice>
-            <strong>Demo mode.</strong> Agents are scripted until you add a Gemini API key.{" "}
             <Link href="/settings" className="font-semibold text-blue underline">
-              Add a key in Settings
+              Add a Gemini API key in Settings
             </Link>{" "}
-            to run language-model agents.
+            to run simulations.
           </Notice>
         </div>
       )}
